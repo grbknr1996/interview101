@@ -1,1 +1,1 @@
-This project is for explaining folder recursion pattern
+This project is for explaining folder recursion pattern and modal open/close
