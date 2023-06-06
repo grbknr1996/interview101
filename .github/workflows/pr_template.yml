@@ -1,0 +1,24 @@
+name: Pull Request Template
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  apply_template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Apply Pull Request Template
+        run: |
+          branch_name=$(echo ${{ github.ref }} | sed 's/refs\/heads\///')
+          template_file=".github/pr_templates/${branch_name}_PR_template.md"
+          if [[ -f $template_file ]]; then
+            template=$(cat $template_file)
+            token=${{ secrets.GITHUB_TOKEN }}
+            api_url=$(jq -r .pull_request.url "$GITHUB_EVENT_PATH")
+            curl -s -X PATCH -H "Authorization: token $token" -H "Content-Type: application/json" -d "{\"body\":\"$template\"}" "$api_url"
+          fi
